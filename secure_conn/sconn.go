@@ -1,3 +1,7 @@
+// Copyright 2021 vompressor. All rights reserved.
+// license that can be found in https://github.com/vompressor/go_sconn/blob/master/LICENSE.
+
+// Package secure_conn is based net package, it encrypts socket communication with a symmetric key algorithm.
 package secure_conn
 
 import (

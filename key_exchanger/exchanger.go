@@ -1,3 +1,7 @@
+// Copyright 2021 vompressor. All rights reserved.
+// license that can be found in https://github.com/vompressor/go_sconn/blob/master/LICENSE.
+
+// Package key_exchanger is based net package, key exchanged through net.Conn socket communication.
 package key_exchanger
 
 import (
@@ -7,21 +11,6 @@ import (
 	"github.com/vompressor/go_sconn/ecdh"
 	"github.com/vompressor/go_sconn/secure_conn"
 )
-
-/*
-
- 1.
-
- client - [client hello] + [client pub pem] -> server
-
- 2.
-
- server - [server hello] + [server pub pem] -> client
-
-*/
-
-type Exchanger struct {
-}
 
 type ExchangeListner struct {
 	net.Listener
