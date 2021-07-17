@@ -1,6 +1,7 @@
 package secure_conn
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"net"
@@ -11,6 +12,8 @@ import (
 
 type SecureConn interface {
 	net.Conn
+	SetKey([]byte)
+	GetKey() []byte
 }
 
 type BlockSConn struct {
@@ -18,31 +21,53 @@ type BlockSConn struct {
 	cipher.Block
 	Key  []byte
 	Type uint16
+	buf  bytes.Buffer
 }
 
 func NewAesSConn(conn net.Conn, key []byte) (*BlockSConn, error) {
 	sc := &BlockSConn{}
 	sc.Type = 0x04
-	cip, err := aes.NewCipher(key)
+	err := sc.SetKey(key)
 	if err != nil {
 		return nil, err
 	}
-	sc.Block = cip
+
 	sc.Conn = conn
 	return sc, nil
 }
 
-func (bsc *BlockSConn) Read(b []byte) (n int, err error) {
-	h := &SecureConnHeader{}
-	l, edata, err := protocol.ReadProtocol(bsc.Conn, h)
+func (bsc *BlockSConn) SetKey(key []byte) error {
+	cip, err := aes.NewCipher(key)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	// TODO:: b size err handleing
-	data := decrypt(bsc.Block, edata)
-	copy(b, data)
-	return l, err
+	bsc.Block = cip
+
+	bsc.Key = make([]byte, len(key))
+	copy(bsc.Key, key)
+	return nil
 }
+func (bsc *BlockSConn) GetKey() []byte {
+	return bsc.Key
+}
+
+func (bsc *BlockSConn) Read(b []byte) (n int, err error) {
+
+	if bsc.buf.Len() == 0 {
+		h := &SecureConnHeader{}
+		_, edata, err := protocol.ReadProtocol(bsc.Conn, h)
+		if err != nil {
+			return 0, err
+		}
+		data := decrypt(bsc.Block, edata)
+
+		bsc.buf.Reset()
+		bsc.buf.Write(data)
+	}
+	return bsc.buf.Read(b)
+}
+
+// TODO:: write return - enced byte len, or plain byte len?
 
 func (bsc *BlockSConn) Write(b []byte) (n int, err error) {
 	edata, err := encrypt(bsc.Block, b)

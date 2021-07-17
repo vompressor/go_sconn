@@ -81,7 +81,6 @@ func ReadProtocol(reader io.Reader, head ProtocolHeader) (int, []byte, error) {
 	}
 
 	msgLen := head.GetBodyLen()
-	println(msgLen)
 	msgByte := make([]byte, msgLen)
 	mlem, err := reader.Read(msgByte)
 	if err != nil {

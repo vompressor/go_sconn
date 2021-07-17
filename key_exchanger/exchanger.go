@@ -1,7 +1,6 @@
 package key_exchanger
 
 import (
-	"fmt"
 	"io"
 	"net"
 
@@ -59,7 +58,6 @@ func ServerSideUpgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
 	}
 
 	remote_pub, err := readClientHello(c)
-	println("hi client!")
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +67,6 @@ func ServerSideUpgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
 	}
 
 	err = writeServerHello(c, lpub)
-	println("server hello")
 
 	if err != nil {
 		return nil, err
@@ -80,8 +77,6 @@ func ServerSideUpgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
 		return nil, err
 	}
 	key := changer.GenerateSharedKey(pub)
-
-	fmt.Printf("%x\n", key)
 
 	return secure_conn.NewAesSConn(c, key)
 }
@@ -114,7 +109,6 @@ func Upgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
 	}
 
 	sharedKey := changer.GenerateSharedKey(dhrpub)
-	fmt.Printf("%x\n", sharedKey)
 	return secure_conn.NewAesSConn(c, sharedKey)
 }
 
