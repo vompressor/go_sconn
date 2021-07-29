@@ -9,7 +9,7 @@ import (
 	"net"
 
 	"github.com/vompressor/go_sconn/ecdh"
-	"github.com/vompressor/go_sconn/secure_conn"
+	"github.com/vompressor/go_sconn/sconn"
 )
 
 type ExchangeListner struct {
@@ -26,21 +26,11 @@ func (c *ExchangeListner) Close() error {
 	return c.Listener.Close()
 }
 
-func (c *ExchangeListner) Accept() (*secure_conn.BlockSConn, error) {
-	conn, err := c.Listener.Accept()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return ServerSideUpgrade(conn)
-}
-
 func (c *ExchangeListner) Addr() net.Addr {
 	return c.Listener.Addr()
 }
 
-func ServerSideUpgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
+func ServerSideUpgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, error) {
 	changer, err := ecdh.NewKXchn()
 	if err != nil {
 		return nil, err
@@ -65,12 +55,12 @@ func ServerSideUpgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
 	if err != nil {
 		return nil, err
 	}
-	key := changer.GenerateSharedKey(pub)
+	sharedKey := changer.GenerateSharedKey(pub)
 
-	return secure_conn.NewAesSConn(c, key)
+	return upgrader(c, sharedKey)
 }
 
-func Upgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
+func Upgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, error) {
 	changer, err := ecdh.NewKXchn()
 	if err != nil {
 		return nil, err
@@ -98,7 +88,7 @@ func Upgrade(c net.Conn) (*secure_conn.BlockSConn, error) {
 	}
 
 	sharedKey := changer.GenerateSharedKey(dhrpub)
-	return secure_conn.NewAesSConn(c, sharedKey)
+	return upgrader(c, sharedKey)
 }
 
 func readServerHello(r io.Reader) (d []byte, err error) {

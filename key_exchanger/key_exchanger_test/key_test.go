@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/vompressor/go_sconn/key_exchanger"
+	"github.com/vompressor/go_sconn/sconn/stream/chacha20_upgrader"
 )
 
 func TestExchange(t *testing.T) {
@@ -14,9 +15,11 @@ func TestExchange(t *testing.T) {
 	}
 	defer conn.Close()
 
-	_, err = key_exchanger.Upgrade(conn)
+	sc, err := key_exchanger.Upgrade(conn, chacha20_upgrader.Upgrade)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
 
+	sc.Write([]byte("hi server"))
+	sc.Close()
 }
