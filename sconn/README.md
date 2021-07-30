@@ -51,6 +51,8 @@ func main() {
 		panic(err.Error())
 	}
 
+	defer cc.Close()
+
 	k := sha256.Sum256([]byte("hello"))
 
 	sc, err = chacha20_upgrader.Upgrade(cc, k[:])
@@ -76,8 +78,12 @@ import (
 
 func main() {
 	var sc sconn.SConn
-	cc, _ := net.Dial("tcp", "localhost:54777")
+	cc, err := net.Dial("tcp", "localhost:54777")
+	if err != nil {
+		panic(err.Error())
+	}
 
+	defer cc.Close()
 	k := sha256.Sum256([]byte("hello"))
 
 	sc, err := chacha20_upgrader.Upgrade(cc, k[:])
@@ -90,6 +96,4 @@ func main() {
 
 	println(string(buf[:n]))
 }
-
-	sc.Close()
 ```
