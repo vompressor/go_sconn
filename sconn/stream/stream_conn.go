@@ -1,3 +1,6 @@
+// Copyright 2021 vompressor. All rights reserved.
+// license that can be found in https://github.com/vompressor/go_sconn/blob/master/LICENSE.
+
 package stream
 
 import (
@@ -24,9 +27,9 @@ func (ssc *StreamSConn) Read(b []byte) (n int, err error) {
 }
 
 func (ssc *StreamSConn) Write(b []byte) (n int, err error) {
-
-	ssc.cip.XORKeyStream(b, b)
-	n, err = ssc.Conn.Write(b)
+	buf := make([]byte, len(b))
+	ssc.cip.XORKeyStream(buf, b)
+	n, err = ssc.Conn.Write(buf)
 
 	return
 }

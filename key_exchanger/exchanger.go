@@ -14,22 +14,28 @@ import (
 
 type ExchangeListner struct {
 	net.Listener
+	upgrader sconn.ConnUpgrader
 }
 
-func NewExcListener(l net.Listener) *ExchangeListner {
+func NewExcListener(l net.Listener, upgrader sconn.ConnUpgrader) *ExchangeListner {
 	chg := ExchangeListner{}
 	chg.Listener = l
+	chg.upgrader = upgrader
 	return &chg
 }
 
-func (c *ExchangeListner) Close() error {
-	return c.Listener.Close()
+// Accept network conn, upgrade conn to secured conn
+func (el *ExchangeListner) Accept() (sconn.SConn, error) {
+	conn, err := el.Listener.Accept()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ServerSideUpgrade(conn, el.upgrader)
 }
 
-func (c *ExchangeListner) Addr() net.Addr {
-	return c.Listener.Addr()
-}
-
+// ServerSideUpgrade Upgrade network conn to secured conn, master side
 func ServerSideUpgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, error) {
 	changer, err := ecdh.NewKXchn()
 	if err != nil {
@@ -60,6 +66,17 @@ func ServerSideUpgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, er
 	return upgrader(c, sharedKey)
 }
 
+// ExcDial Dial network conn, upgrade conn to secured conn
+func ExcDial(network, address string, upgrader sconn.ConnUpgrader) (sconn.SConn, error) {
+	conn, err := net.Dial(network, address)
+	if err != nil {
+		return nil, err
+	}
+
+	return Upgrade(conn, upgrader)
+}
+
+// Upgrade network conn to secured conn, slave side
 func Upgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, error) {
 	changer, err := ecdh.NewKXchn()
 	if err != nil {

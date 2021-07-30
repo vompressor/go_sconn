@@ -15,18 +15,14 @@ func main() {
 	}
 	defer l.Close()
 
-	excl := key_exchanger.NewExcListener(l)
+	excl := key_exchanger.NewExcListener(l, chacha20_upgrader.Upgrade)
 
-	c, err := excl.Accept()
+	sc, err := excl.Accept()
 	if err != nil {
 		println(err.Error())
 		return
 	}
-
-	sc, err := key_exchanger.ServerSideUpgrade(c, chacha20_upgrader.Upgrade)
-	if err != nil {
-		panic(err.Error())
-	}
+	defer sc.Close()
 
 	buf := make([]byte, 512)
 	n, _ := sc.Read(buf)

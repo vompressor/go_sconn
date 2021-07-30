@@ -13,6 +13,7 @@ Structures must consist only of the following types:
  - uint16
  - uint32
  - uint64
+ - bool
 
 ## GetByteLen() int
 It should be implemented to return the length of the protocol body in the header struct.
@@ -46,6 +47,7 @@ It should be implemented to set the body length in header struct at length to th
 ```
 
 ## EncodeProtocolByte(head ProtocolHeader, msg []byte) ([]byte, error)
+return joined binary enchoded header, msg
 
 ## DecodeProtocolByte(head ProtocolHeader, msg []byte) ([]byte, error)
 

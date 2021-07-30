@@ -1,7 +1,6 @@
 package key_exchangetrtest
 
 import (
-	"net"
 	"testing"
 
 	"github.com/vompressor/go_sconn/key_exchanger"
@@ -9,17 +8,12 @@ import (
 )
 
 func TestExchange(t *testing.T) {
-	conn, err := net.Dial("unix", "/tmp/testsocket")
+	sc, err := key_exchanger.ExcDial("unix", "/tmp/testsocket", chacha20_upgrader.Upgrade)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	defer conn.Close()
-
-	sc, err := key_exchanger.Upgrade(conn, chacha20_upgrader.Upgrade)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
+	defer sc.Close()
 
 	sc.Write([]byte("hi server"))
-	sc.Close()
+
 }
