@@ -53,6 +53,7 @@ func main() {
 
 	defer cc.Close()
 
+	// create key
 	k := sha256.Sum256([]byte("hello"))
 
 	sc, err = chacha20_upgrader.Upgrade(cc, k[:])
@@ -84,6 +85,8 @@ func main() {
 	}
 
 	defer cc.Close()
+
+	// create key
 	k := sha256.Sum256([]byte("hello"))
 
 	sc, err := chacha20_upgrader.Upgrade(cc, k[:])
