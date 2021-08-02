@@ -28,4 +28,5 @@ func main() {
 		panic(err.Error())
 	}
 	sc.Write([]byte("hello"))
+	sc.Write([]byte("hello"))
 }

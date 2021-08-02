@@ -26,6 +26,9 @@ func TestSconn(t *testing.T) {
 	n, _ := sc.Read(buf)
 
 	println(string(buf[:n]))
+	n, _ = sc.Read(buf)
+
+	println(string(buf[:n]))
 
 	sc.Close()
 }
