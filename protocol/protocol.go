@@ -96,3 +96,34 @@ func ReadProtocol(reader io.Reader, head ProtocolHeader) (int, []byte, error) {
 
 	return rlen + mlem, msgByte, nil
 }
+
+func ReadHeadAndProtocol(reader io.Reader, head ProtocolHeader) (int, []byte, []byte, error) {
+	headLen := binary.Size(head)
+	headByte := make([]byte, headLen)
+	rlen, err := reader.Read(headByte)
+	if err != nil {
+		return rlen, nil, nil, err
+	}
+
+	if rlen != headLen {
+		return rlen, nil, nil, errors.New("header size err")
+	}
+
+	err = DecodeHeader(head, headByte)
+	if err != nil {
+		return rlen, nil, nil, err
+	}
+
+	msgLen := head.GetBodyLen()
+	msgByte := make([]byte, msgLen)
+	mlem, err := reader.Read(msgByte)
+	if err != nil {
+		return rlen + mlem, nil, nil, err
+	}
+
+	if mlem != msgLen {
+		return rlen + mlem, nil, nil, errors.New("msg size err")
+	}
+
+	return rlen + mlem, headByte, msgByte, nil
+}

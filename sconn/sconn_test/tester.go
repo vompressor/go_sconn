@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/vompressor/go_sconn/sconn"
-	"github.com/vompressor/go_sconn/sconn/stream/chacha20_upgrader"
+	"github.com/vompressor/go_sconn/sconn/aead/aes_gcm_upgrader"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 
 	k := sha256.Sum256([]byte("hello"))
 
-	sc, err = chacha20_upgrader.Upgrade(cc, k[:])
+	sc, err = aes_gcm_upgrader.Upgrade(cc, k[:32])
 	if err != nil {
 		panic(err.Error())
 	}
