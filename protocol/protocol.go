@@ -15,7 +15,12 @@ type ProtocolHeader interface {
 	SetBodyLen(int)
 }
 
+type ProtocolHeaderHash interface {
+	Hash() []byte
+}
+
 func EncodeProtocolByte(head ProtocolHeader, msg []byte) ([]byte, error) {
+	
 	buf := bytes.NewBuffer(make([]byte, 0))
 
 	head.SetBodyLen(len(msg))

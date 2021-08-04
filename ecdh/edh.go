@@ -8,9 +8,9 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
-	"crypto/sha256"
 	"crypto/x509"
 	"encoding/pem"
+	"hash"
 )
 
 // DHPubKey is ecdsa.PublicKey wrapper
@@ -52,10 +52,8 @@ func (kx *KeyExchanger) GeneratePub() (ped []byte, err error) {
 // GenerateSharedKey return shared key hashed by sha256
 // it require public key of the other party
 // and it combine with the other party's public key to return a unique private key
-func (kx *KeyExchanger) GenerateSharedKey(remotePub *DHPubKey) []byte {
+func (kx *KeyExchanger) GenerateSharedKey(remotePub *DHPubKey, hasher hash.Hash) []byte {
 	a, b := remotePub.Pub.Curve.ScalarMult(remotePub.Pub.X, remotePub.Pub.Y, kx.priv.D.Bytes())
-
-	hasher := sha256.New()
 
 	hasher.Write(a.Bytes())
 	hasher.Write(b.Bytes())

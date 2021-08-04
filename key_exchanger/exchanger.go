@@ -5,6 +5,7 @@
 package key_exchanger
 
 import (
+	"crypto/sha256"
 	"io"
 	"net"
 
@@ -61,7 +62,7 @@ func ServerSideUpgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, er
 	if err != nil {
 		return nil, err
 	}
-	sharedKey := changer.GenerateSharedKey(pub)
+	sharedKey := changer.GenerateSharedKey(pub, sha256.New())
 
 	return upgrader(c, sharedKey)
 }
@@ -104,7 +105,7 @@ func Upgrade(c net.Conn, upgrader sconn.ConnUpgrader) (sconn.SConn, error) {
 		return nil, err
 	}
 
-	sharedKey := changer.GenerateSharedKey(dhrpub)
+	sharedKey := changer.GenerateSharedKey(dhrpub, sha256.New())
 	return upgrader(c, sharedKey)
 }
 
