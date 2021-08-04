@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/cipher"
 	"crypto/rand"
-	"errors"
 	"fmt"
 	"net"
 
@@ -55,18 +54,15 @@ func (s *BlockSConn) Read(b []byte) (int, error) {
 		//		}
 	}
 
-	x, body, err := protocol.ReadProtocol(s.Conn, proto)
+	_, body, err := protocol.ReadProtocol(s.Conn, proto)
 	if err != nil {
 		return 0, err
 	}
 	decryptedBody, _ := s.decrypt(body)
 
-	n, err := s.buf.Write(decryptedBody)
+	_, err = s.buf.Write(decryptedBody)
 	if err != nil {
 		return bufRead, err
-	}
-	if x != n {
-		return bufRead, errors.New("size mismatch")
 	}
 
 	return s.buf.Read(b)
@@ -74,14 +70,11 @@ func (s *BlockSConn) Read(b []byte) (int, error) {
 
 func (s *BlockSConn) Write(b []byte) (int, error) {
 	cipherText := s.encrypt(b)
+	proto := new(msgProtocol)
 
-	n, err := s.Conn.Write(cipherText)
+	_, err := protocol.WriteProtocol(s.Conn, proto, cipherText)
 	if err != nil {
 		return 0, err
-	}
-
-	if n != len(cipherText) {
-		return 0, errors.New("")
 	}
 
 	return len(b), nil
