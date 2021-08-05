@@ -1,5 +1,6 @@
 # Custom Upgrader
-package block, stream, aead have an `Upgrade` function
+package block, stream, aead have an `Upgrade` function   
+This function creates a SConn by inputted the socket, cipher, and other necessary values.   
 
 ### block.Upgrade
 ```
@@ -27,8 +28,9 @@ func Upgrade(conn net.Conn, cip cipher.AEAD, init []byte) *AEADSConn
 
 Depending on the type of encryption you need to use that feature.   
 ## sconn.ConnUpgrader
-The last function to be defined is 'sconn.ConnUpgrader'.     
-Libraries such as 'key_exchange' use this function.   
+The function that will actually be used is the type 'sconn.Connupgrader' function.   
+This function creates an encrypted socket by inputted a socket and key.   
+Libs such as 'key_exchanger' use this function.   
 
 ```
 // conn - Socket to be used for encrypted communication
