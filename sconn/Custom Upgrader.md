@@ -30,7 +30,7 @@ Depending on the type of encryption you need to use that feature.
 ## sconn.ConnUpgrader
 The function that will actually be used is the type 'sconn.Connupgrader' function.   
 This function creates an encrypted socket by inputted a socket and key.   
-Libs such as 'key_exchanger' use this function.   
+Libs such as `key_exchanger` use this function.   
 
 ```
 // conn - Socket to be used for encrypted communication

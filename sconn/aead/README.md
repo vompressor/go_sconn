@@ -1,6 +1,11 @@
 # aead
 SConn used aead cipher.   
 Encrypt/decrypt communication with aead ciphers.  
+ - Packet length verification
+ - Cipher text and additional data integrity verification
+
+ - chacha20-poly1305
+ - aes-gcm
 
 ##
 Encription Write
@@ -10,9 +15,9 @@ Encription Write
  +-------+    +--------+    +--------+    +--------+
 
   protocol
- +-- 4bytes --+-- 4bytes --+---- 4bytes ----+-- ... bytes --+
- | Msg Length |    Seq     | Additional Len |  cipher text  |
- +------------+------------+----------------+---------------+
+ +-- 4bytes --+-- 4bytes --+---- 4bytes ----+-- ... bytes --+--------- ... bytes --------+
+ | Msg Length |    Seq     | Additional Len |  cipher text  | additional data (optional) |
+ +------------+------------+----------------+---------------+----------------------------+
 ```
 Decription Read
 ```

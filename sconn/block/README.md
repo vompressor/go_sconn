@@ -1,6 +1,10 @@
 # block
 SConn used block cipher with mode.   
 Encrypt/decrypt communication with block ciphers.  
+ - Packet length verification
+ - No data integrity verification
+
+ - aes-ctr
 
 ##
 Encription Write
