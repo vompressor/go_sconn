@@ -3,20 +3,20 @@
 ## Handshake
 ```
  | Server |                  | Client |
- 0. Generate key pair        0. Generate key pair
-
- 1. Listen
-                             1. Dial
- 2. Accept Socket
-                             2. Send client pub key    ( Client Hello )
- 3. Recv client pub key <----+
-
- 4. Send server pub key                                ( Server Hello )
- +-------------------------> 3. Recv server pubkey
- 5. combine client pub, server priv
-                             4. combine server pub, client priv
- 6. Get shared key                                     ( hash key )
-                             5. Get shared key         ( hash key )
+  0. Generate key pair        0. Generate key pair
+ 
+  1. Listen
+                              1. Dial
+  2. Accept Socket
+                              2. Send client pub key    ( Client Hello )
+  3. Recv client pub key <----+
+ 
+  4. Send server pub key                                ( Server Hello )
+  +-------------------------> 3. Recv server pubkey
+  5. combine client pub, server priv
+                              4. combine server pub, client priv
+  6. Get shared key                                     ( hash key )
+                              5. Get shared key         ( hash key )
 ```
 ## Protocol
 ```
