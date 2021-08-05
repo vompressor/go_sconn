@@ -12,9 +12,9 @@ Elliptic-curve Diffie–Hellman, ECDH implementation
 Key exchange use ecdh   
  - generate pub/priv pair
  - send local pub to remote
- - generate shared key use local priv and remote pub
- - listen, if accepted, create sconn use own shared key
- - dial, if dialed, create sconn use own shared key
+ - generate shared key from local priv and remote pub
+ - listen, if accepted, create sconn use exchanged shared key
+ - dial, if dialed, create sconn use exchanged shared key
 
 ## protocol
 Lib for making byte based protocol easy   
@@ -30,12 +30,12 @@ functions
  - encrypt write
  - decrypt read
 There are three kinds of implementations.   
- - Block encription used
+ - Block cipher used
    - aes cbc mode
- - stream encription used
+ - stream cipher used
    - aes ctr mode
    - chacha20
- - AEAD encription used
+ - AEAD cipher used
    - aes gcm mode
    - chacha20-poly1305
 
