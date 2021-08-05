@@ -8,6 +8,7 @@ import (
 	"net"
 
 	"github.com/vompressor/go_sconn/protocol"
+	"github.com/vompressor/go_sconn/sconn"
 )
 
 type msgProtocol struct {
@@ -32,7 +33,7 @@ type BlockSConn struct {
 	buf *bytes.Buffer
 }
 
-func Upgrade(conn net.Conn, cip cipher.Block, eg, dg BlockModeGetter) *BlockSConn {
+func Upgrade(conn net.Conn, cip cipher.Block, eg, dg BlockModeGetter) sconn.SConn {
 	return &BlockSConn{
 		cip:             cip,
 		Conn:            conn,
