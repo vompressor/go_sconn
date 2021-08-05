@@ -1,58 +1,51 @@
 # key_exchanger
+Generate shared key from key exchange.
+And create `SConn` use shared key.
+## net.Conn -> sconn.SConn
+```
+// Server
+c, _ := net.Accept()
+ac, err := key_exchanger.ServerSideUpgrade(c, chacha20poly1305_upgrader.Upgrade)
 
-## Handshake
-```
- | Server |                  | Client |
-  0. Generate key pair        0. Generate key pair
- 
-  1. Listen
-                              1. Dial
-  2. Accept Socket
-                              2. Send client pub key    ( Client Hello )
-  3. Recv client pub key <----+
- 
-  4. Send server pub key                                ( Server Hello )
-  +-------------------------> 3. Recv server pubkey
-  5. combine client pub, server priv
-                              4. combine server pub, client priv
-  6. Get shared key                                     ( hash key )
-                              5. Get shared key         ( hash key )
-```
-## Protocol
-```
- +-- 2bytes --+-- 2bytes --+-- 4bytes --+-- 4bytes --+--- 32 bytes ----+
- |    Type    |   Method   | Seq (Unuse)|  Body Len  | body (e.g. key) |
- +------------+------------+------------+------------+-----------------+
-```
-### Client Hello
-```
-protocol
- - Type: 0x08
- - Method: 0x01
- - Seq: Unuse
- - Body Len: 32
- - Body: [Client pub key]
-```
-### Server Hello
-```
-protocol
- - Type: 0x08
- - Method: 0x02
- - Seq: Unuse
- - Body Len: 32
- - Body: [Server pub key]
+if err != nil {
+    println(err.Error())
+    os.Exit(1)
+}
 ```
 
-## Shared Key
 ```
-func (kx *KeyExchanger) GenerateSharedKey(remotePub *DHPubKey, hasher hash.Hash) []byte {
+// Client
+c, _ := net.Dial(...)
+ac, err := key_exchanger.Upgrade(c, chacha20poly1305_upgrader.Upgrade)
 
-    // Get a common value a, b
-	a, b := remotePub.Pub.Curve.ScalarMult(remotePub.Pub.X, remotePub.Pub.Y, kx.priv.D.Bytes())
+if err != nil {
+    println(err.Error())
+    os.Exit(1)
+}
+```
 
-    // Hash a and b
-	hasher.Write(a.Bytes())
-	hasher.Write(b.Bytes())
-	return hasher.Sum(nil)
+## key_exchanger Listen/Dial
+```
+// Server
+l, err := net.Listen(...)
+if err != nil {
+    println(err.Error())
+    return
+}
+defer l.Close()
+
+excl := key_exchanger.NewExcListener(l, aes_ctr_upgrader.Upgrade)
+
+sc, err := excl.Accept()
+if err != nil {
+    println(err.Error())
+    return
+}
+```
+```
+// Client
+sc, err := key_exchanger.ExcDial(..., aes_ctr_upgrader.Upgrade)
+if err != nil {
+    t.Fatal(err.Error())
 }
 ```
