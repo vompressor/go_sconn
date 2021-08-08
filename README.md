@@ -1,5 +1,6 @@
 # secure socket library
-A library for secretly exchanging messages between two hosts.
+A library for secretly exchanging messages between two hosts.   
+A library for creating lightweight and fast cryptographic sockets.
 
 ## ecdh
 Elliptic-curve Diffie–Hellman, ECDH implementation   
