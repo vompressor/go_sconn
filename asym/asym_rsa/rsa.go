@@ -30,7 +30,10 @@ func New(bits int) (*ASymRSA, error) {
 func Load(privBytes []byte) (*ASymRSA, error) {
 	rsaPriv, err := x509.ParsePKCS8PrivateKey(privBytes)
 	if err != nil {
-		return nil, err
+		rsaPriv, err = x509.ParsePKCS1PrivateKey(privBytes)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &ASymRSA{rsaPriv.(*rsa.PrivateKey)}, nil
