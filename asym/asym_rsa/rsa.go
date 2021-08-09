@@ -73,12 +73,18 @@ func (a *ASymRSA) PrivByte() ([]byte, error) {
 	}
 	return data, nil
 }
+
+func (a *ASymRSA) PrivByte1() ([]byte, error) {
+	data := x509.MarshalPKCS1PrivateKey(a.PrivateKey)
+	return data, nil
+}
+
 func (a *ASymRSA) PubByte() ([]byte, error) {
 	return a.PubASym().PubByte()
 }
 
-func (a *ASymRSA) PrivPEM() ([]byte, error) {
-	data, err := a.PrivByte()
+func (a *ASymRSA) PrivPEM1() ([]byte, error) {
+	data, err := a.PrivByte1()
 	if err != nil {
 		return nil, err
 	}
